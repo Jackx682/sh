@@ -154,7 +154,7 @@ public_ip=$(get_public_ip)
 isp_info=$(curl -s --max-time 3 http://ipinfo.io/org)
 
 
-if echo "$isp_info" | grep -Eiq 'china|mobile|unicom|telecom'; then
+if echo "$isp_info" | grep -Eiq 'mobile|unicom|telecom'; then
   ipv4_address=$(get_local_ip)
 else
   ipv4_address="$public_ip"
@@ -2374,7 +2374,7 @@ web_optimization() {
 
 
 check_docker_app() {
-	if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1 ; then
+	if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name" ; then
 		check_docker="${gl_lv}已安装${gl_bai}"
 	else
 		check_docker="${gl_hui}未安装${gl_bai}"
@@ -2385,7 +2385,7 @@ check_docker_app() {
 
 # check_docker_app() {
 
-# if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1; then
+# if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name"; then
 # check_docker="${gl_lv}已安裝${gl_bai}"
 # else
 # check_docker="${gl_hui}未安裝${gl_bai}"
@@ -2736,7 +2736,7 @@ while true; do
 	echo -e "$docker_name $check_docker $update_status"
 	echo "$docker_describe"
 	echo "$docker_url"
-	if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1; then
+	if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name"; then
 		if [ ! -f "/home/docker/${docker_name}_port.conf" ]; then
 			local docker_port=$(docker port "$docker_name" | head -n1 | awk -F'[:]' '/->/ {print $NF; exit}')
 			docker_port=${docker_port:-0000}
@@ -2768,7 +2768,7 @@ while true; do
 			setup_docker_dir
 			echo "$docker_port" > "/home/docker/${docker_name}_port.conf"
 
-			mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+			add_app_id
 
 			clear
 			echo "$docker_name已經安裝完成"
@@ -2783,7 +2783,7 @@ while true; do
 			docker rmi -f "$docker_img"
 			docker_rum
 
-			mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+			add_app_id
 
 			clear
 			echo "$docker_name已經安裝完成"
@@ -2849,7 +2849,7 @@ docker_app_plus() {
 		echo -e "$app_name $check_docker $update_status"
 		echo "$app_text"
 		echo "$app_url"
-		if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1; then
+		if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name"; then
 			if [ ! -f "/home/docker/${docker_name}_port.conf" ]; then
 				local docker_port=$(docker port "$docker_name" | head -n1 | awk -F'[:]' '/->/ {print $NF; exit}')
 				docker_port=${docker_port:-0000}
@@ -2880,12 +2880,12 @@ docker_app_plus() {
 				setup_docker_dir
 				echo "$docker_port" > "/home/docker/${docker_name}_port.conf"
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				;;
 			2)
 				docker_app_update
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				;;
 			3)
 				docker_app_uninstall
@@ -3557,13 +3557,13 @@ while true; do
 			iptables_open
 			panel_app_install
 
-			mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+			add_app_id
 			send_stats "${panelname}安裝"
 			;;
 		2)
 			panel_app_manage
 
-			mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+			add_app_id
 			send_stats "${panelname}控制"
 
 			;;
@@ -3901,7 +3901,7 @@ frps_panel() {
 				install_docker
 				generate_frps_config
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				echo "FRP服務端已經安裝完成"
 				;;
 			2)
@@ -3911,7 +3911,7 @@ frps_panel() {
 				[ -f /home/frp/frps.toml ] || cp /home/frp/frp_0.61.0_linux_amd64/frps.toml /home/frp/frps.toml
 				donlond_frp frps
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				echo "FRP服務端已經更新完成"
 				;;
 			3)
@@ -3998,7 +3998,7 @@ frpc_panel() {
 				install_docker
 				configure_frpc
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				echo "FRP客戶端已經安裝完成"
 				;;
 			2)
@@ -4008,7 +4008,7 @@ frpc_panel() {
 				[ -f /home/frp/frpc.toml ] || cp /home/frp/frp_0.61.0_linux_amd64/frpc.toml /home/frp/frpc.toml
 				donlond_frp frpc
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				echo "FRP客戶端已經更新完成"
 				;;
 
@@ -4091,7 +4091,7 @@ yt_menu_pro() {
 				curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
 				chmod a+rx /usr/local/bin/yt-dlp
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				echo "安裝完成。按任意鍵繼續..."
 				read ;;
 			2)
@@ -4099,7 +4099,7 @@ yt_menu_pro() {
 				echo "正在更新 yt-dlp..."
 				yt-dlp -U
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				echo "更新完成。按任意鍵繼續..."
 				read ;;
 			3)
@@ -4591,8 +4591,8 @@ dd_xitong() {
 			echo "35. openSUSE Tumbleweed       36. fnos飛牛公測版"
 			echo "------------------------"
 			echo "41. Windows 11                42. Windows 10"
-			echo "43. Windows 7                 44. Windows Server 2022"
-			echo "45. Windows Server 2019       46. Windows Server 2016"
+			echo "43. Windows 7                 44. Windows Server 2025"
+			echo "45. Windows Server 2022       46. Windows Server 2019"
 			echo "47. Windows 11 ARM"
 			echo "------------------------"
 			echo "0. 返回上一級選單"
@@ -4788,7 +4788,6 @@ dd_xitong() {
 				exit
 				;;
 
-
 			  41)
 				send_stats "重裝windows11"
 				dd_xitong_2
@@ -4796,6 +4795,7 @@ dd_xitong() {
 				reboot
 				exit
 				;;
+
 			  42)
 				dd_xitong_2
 				send_stats "重裝windows10"
@@ -4803,6 +4803,7 @@ dd_xitong() {
 				reboot
 				exit
 				;;
+
 			  43)
 				send_stats "重裝windows7"
 				dd_xitong_4
@@ -4812,23 +4813,25 @@ dd_xitong() {
 				;;
 
 			  44)
+				send_stats "重裝windows server 25"
+				dd_xitong_2
+				bash InstallNET.sh -windows 2025 -lang "cn"
+				reboot
+				exit
+				;;
+
+			  45)
 				send_stats "重裝windows server 22"
 				dd_xitong_2
 				bash InstallNET.sh -windows 2022 -lang "cn"
 				reboot
 				exit
 				;;
-			  45)
+
+			  46)
 				send_stats "重裝windows server 19"
 				dd_xitong_2
 				bash InstallNET.sh -windows 2019 -lang "cn"
-				reboot
-				exit
-				;;
-			  46)
-				send_stats "重裝windows server 16"
-				dd_xitong_2
-				bash InstallNET.sh -windows 2016 -lang "cn"
 				reboot
 				exit
 				;;
@@ -6882,7 +6885,7 @@ docker_ssh_migration() {
 
 		echo -e "${YELLOW}正在備份 Docker 容器...${NC}"
 		docker ps --format '{{.Names}}'
-		read -p "請輸入要備份的容器名（多個空格分隔，回車備份全部運行中容器）:" containers
+		read -e -p  "請輸入要備份的容器名（多個空格分隔，回車備份全部運行中容器）:" containers
 
 		install tar jq gzip
 		install_docker
@@ -6917,7 +6920,7 @@ docker_ssh_migration() {
 				local project_name=$(docker inspect "$c" | jq -r '.[0].Config.Labels["com.docker.compose.project"] // empty')
 
 				if [ -z "$project_dir" ]; then
-					read -p "未檢測到 compose 目錄，請手動輸入路徑:" project_dir
+					read -e -p  "未檢測到 compose 目錄，請手動輸入路徑:" project_dir
 				fi
 
 				# 如果該 Compose 項目已經打包過，跳過
@@ -6990,7 +6993,7 @@ docker_ssh_migration() {
 	restore_docker() {
 
 		send_stats "Docker還原"
-		read -p "請輸入要還原的備份目錄:" BACKUP_DIR
+		read -e -p  "請輸入要還原的備份目錄:" BACKUP_DIR
 		[[ ! -d "$BACKUP_DIR" ]] && { echo -e "${RED}備份目錄不存在${NC}"; return; }
 
 		echo -e "${BLUE}開始執行還原操作...${NC}"
@@ -7005,7 +7008,7 @@ docker_ssh_migration() {
 				project_name=$(basename "$f" | sed 's/backup_type_//')
 				path_file="$BACKUP_DIR/compose_path_${project_name}.txt"
 				[[ -f "$path_file" ]] && original_path=$(cat "$path_file") || original_path=""
-				[[ -z "$original_path" ]] && read -p "未找到原始路徑，請輸入還原目錄路徑:" original_path
+				[[ -z "$original_path" ]] && read -e -p  "未找到原始路徑，請輸入還原目錄路徑:" original_path
 
 				# 檢查該 compose 項目的容器是否已經在運行
 				running_count=$(docker ps --filter "label=com.docker.compose.project=$project_name" --format '{{.Names}}' | wc -l)
@@ -7014,8 +7017,8 @@ docker_ssh_migration() {
 					continue
 				fi
 
-				read -p "確認還原 Compose 項目 [$project_name] 到路徑 [$original_path] ? (y/n): " confirm
-				[[ "$confirm" != "y" ]] && read -p "請輸入新的還原路徑:" original_path
+				read -e -p  "確認還原 Compose 項目 [$project_name] 到路徑 [$original_path] ? (y/n): " confirm
+				[[ "$confirm" != "y" ]] && read -e -p  "請輸入新的還原路徑:" original_path
 
 				mkdir -p "$original_path"
 				tar -xzf "$BACKUP_DIR/compose_project_${project_name}.tar.gz" -C "$original_path"
@@ -7109,11 +7112,11 @@ docker_ssh_migration() {
 	migrate_docker() {
 		send_stats "Docker遷移"
 		install jq
-		read -p "請輸入要遷移的備份目錄:" BACKUP_DIR
+		read -e -p  "請輸入要遷移的備份目錄:" BACKUP_DIR
 		[[ ! -d "$BACKUP_DIR" ]] && { echo -e "${RED}備份目錄不存在${NC}"; return; }
 
-		read -p "目標服務器IP:" TARGET_IP
-		read -p "目標服務器SSH用戶名:" TARGET_USER
+		read -e -p  "目標服務器IP:" TARGET_IP
+		read -e -p  "目標服務器SSH用戶名:" TARGET_USER
 
 		LATEST_TAR="$BACKUP_DIR"  # 这里直接传整个目录
 
@@ -7130,7 +7133,7 @@ docker_ssh_migration() {
 	# ----------------------------
 	delete_backup() {
 		send_stats "Docker備份文件刪除"
-		read -p "請輸入要刪除的備份目錄:" BACKUP_DIR
+		read -e -p  "請輸入要刪除的備份目錄:" BACKUP_DIR
 		[[ ! -d "$BACKUP_DIR" ]] && { echo -e "${RED}備份目錄不存在${NC}"; return; }
 		rm -rf "$BACKUP_DIR"
 		echo -e "${GREEN}已刪除備份:${BACKUP_DIR}${NC}"
@@ -7156,7 +7159,7 @@ docker_ssh_migration() {
 			echo "------------------------"
 			echo -e "0. 返回上一級菜單"
 			echo "------------------------"
-			read -p "請選擇:" choice
+			read -e -p  "請選擇:" choice
 			case $choice in
 				1) backup_docker ;;
 				2) migrate_docker ;;
@@ -9079,7 +9082,7 @@ while true; do
 			echo -e "哪吒監控$check_docker $update_status"
 			echo "開源、輕量、易用的服務器監控與運維工具"
 			echo "官網搭建文檔: https://nezha.wiki/guide/dashboard.html"
-			if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1; then
+			if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name"; then
 				local docker_port=$(docker port $docker_name | awk -F'[:]' '/->/ {print $NF}' | uniq)
 				check_docker_app_ip
 			fi
@@ -9171,7 +9174,7 @@ while true; do
 			fi
 			echo ""
 
-			if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1; then
+			if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name"; then
 				yuming=$(cat /home/docker/mail.txt)
 				echo "訪問地址:"
 				echo "https://$yuming"
@@ -9218,7 +9221,7 @@ while true; do
 						-d analogic/poste.io
 
 
-					mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+					add_app_id
 
 					clear
 					echo "poste.io已經安裝完成"
@@ -9243,7 +9246,7 @@ while true; do
 						-d analogic/poste.i
 
 
-					mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+					add_app_id
 
 					clear
 					echo "poste.io已經安裝完成"
@@ -9567,7 +9570,7 @@ while true; do
 			echo -e "雷池服務$check_docker"
 			echo "雷池是長亭科技開發的WAF站點防火牆程序面板，可以反代站點進行自動化防禦"
 			echo "視頻介紹: https://www.bilibili.com/video/BV1mZ421T74c?t=0.1"
-			if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1; then
+			if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name"; then
 				check_docker_app_ip
 			fi
 			echo ""
@@ -9585,7 +9588,7 @@ while true; do
 					check_disk_space 5
 					bash -c "$(curl -fsSLk https://waf-ce.chaitin.cn/release/latest/setup.sh)"
 
-					mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+					add_app_id
 					clear
 					echo "雷池WAF面板已經安裝完成"
 					check_docker_app_ip
@@ -9598,7 +9601,7 @@ while true; do
 					docker rmi $(docker images | grep "safeline" | grep "none" | awk '{print $3}')
 					echo ""
 
-					mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+					add_app_id
 					clear
 					echo "雷池WAF面板已經更新完成"
 					check_docker_app_ip
@@ -11789,9 +11792,9 @@ while true; do
 
 		docker_rum() {
 
-		read -p "請輸入組網的客戶端數量 (默認 5):" COUNT
+		read -e -p  "請輸入組網的客戶端數量 (默認 5):" COUNT
 		COUNT=${COUNT:-5}
-		read -p "請輸入 WireGuard 網段 (默認 10.13.13.0):" NETWORK
+		read -e -p  "請輸入 WireGuard 網段 (默認 10.13.13.0):" NETWORK
 		NETWORK=${NETWORK:-10.13.13.0}
 
 		PEERS=$(seq -f "wg%02g" 1 "$COUNT" | paste -sd,)

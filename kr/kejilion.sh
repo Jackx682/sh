@@ -154,7 +154,7 @@ public_ip=$(get_public_ip)
 isp_info=$(curl -s --max-time 3 http://ipinfo.io/org)
 
 
-if echo "$isp_info" | grep -Eiq 'china|mobile|unicom|telecom'; then
+if echo "$isp_info" | grep -Eiq 'mobile|unicom|telecom'; then
   ipv4_address=$(get_local_ip)
 else
   ipv4_address="$public_ip"
@@ -2374,7 +2374,7 @@ web_optimization() {
 
 
 check_docker_app() {
-	if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1 ; then
+	if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name" ; then
 		check_docker="${gl_lv}已安装${gl_bai}"
 	else
 		check_docker="${gl_hui}未安装${gl_bai}"
@@ -2385,7 +2385,7 @@ check_docker_app() {
 
 # check_docker_app() {
 
-# if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1; then
+# if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name"; then
 # check_docker = "$ {gl_lv} $ {gl_bai} 설치"
 # else
 # check_docker = "$ {gl_hui} $ {gl_bai}가 설치되지 않았다"
@@ -2736,7 +2736,7 @@ while true; do
 	echo -e "$docker_name $check_docker $update_status"
 	echo "$docker_describe"
 	echo "$docker_url"
-	if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1; then
+	if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name"; then
 		if [ ! -f "/home/docker/${docker_name}_port.conf" ]; then
 			local docker_port=$(docker port "$docker_name" | head -n1 | awk -F'[:]' '/->/ {print $NF; exit}')
 			docker_port=${docker_port:-0000}
@@ -2768,7 +2768,7 @@ while true; do
 			setup_docker_dir
 			echo "$docker_port" > "/home/docker/${docker_name}_port.conf"
 
-			mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+			add_app_id
 
 			clear
 			echo "$docker_name설치"
@@ -2783,7 +2783,7 @@ while true; do
 			docker rmi -f "$docker_img"
 			docker_rum
 
-			mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+			add_app_id
 
 			clear
 			echo "$docker_name설치"
@@ -2849,7 +2849,7 @@ docker_app_plus() {
 		echo -e "$app_name $check_docker $update_status"
 		echo "$app_text"
 		echo "$app_url"
-		if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1; then
+		if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name"; then
 			if [ ! -f "/home/docker/${docker_name}_port.conf" ]; then
 				local docker_port=$(docker port "$docker_name" | head -n1 | awk -F'[:]' '/->/ {print $NF; exit}')
 				docker_port=${docker_port:-0000}
@@ -2880,12 +2880,12 @@ docker_app_plus() {
 				setup_docker_dir
 				echo "$docker_port" > "/home/docker/${docker_name}_port.conf"
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				;;
 			2)
 				docker_app_update
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				;;
 			3)
 				docker_app_uninstall
@@ -3557,13 +3557,13 @@ while true; do
 			iptables_open
 			panel_app_install
 
-			mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+			add_app_id
 			send_stats "${panelname}설치하다"
 			;;
 		2)
 			panel_app_manage
 
-			mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+			add_app_id
 			send_stats "${panelname}제어"
 
 			;;
@@ -3901,7 +3901,7 @@ frps_panel() {
 				install_docker
 				generate_frps_config
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				echo "FRP 서버가 설치되었습니다"
 				;;
 			2)
@@ -3911,7 +3911,7 @@ frps_panel() {
 				[ -f /home/frp/frps.toml ] || cp /home/frp/frp_0.61.0_linux_amd64/frps.toml /home/frp/frps.toml
 				donlond_frp frps
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				echo "FRP 서버가 업데이트되었습니다"
 				;;
 			3)
@@ -3998,7 +3998,7 @@ frpc_panel() {
 				install_docker
 				configure_frpc
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				echo "FRP 클라이언트가 설치되었습니다"
 				;;
 			2)
@@ -4008,7 +4008,7 @@ frpc_panel() {
 				[ -f /home/frp/frpc.toml ] || cp /home/frp/frp_0.61.0_linux_amd64/frpc.toml /home/frp/frpc.toml
 				donlond_frp frpc
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				echo "FRP 클라이언트가 업데이트되었습니다"
 				;;
 
@@ -4091,7 +4091,7 @@ yt_menu_pro() {
 				curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
 				chmod a+rx /usr/local/bin/yt-dlp
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				echo "설치가 완료되었습니다. 계속하려면 키를 누르십시오 ..."
 				read ;;
 			2)
@@ -4099,7 +4099,7 @@ yt_menu_pro() {
 				echo "yt-dlp 업데이트 ..."
 				yt-dlp -U
 
-				mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+				add_app_id
 				echo "업데이트가 완료되었습니다. 계속하려면 키를 누르십시오 ..."
 				read ;;
 			3)
@@ -4591,8 +4591,8 @@ dd_xitong() {
 			echo "35. OpenSuse Tumbleweed 36. FNOS FEINIU 공개 베타 버전"
 			echo "------------------------"
 			echo "41. Windows 11                42. Windows 10"
-			echo "43. Windows 7                 44. Windows Server 2022"
-			echo "45. Windows Server 2019       46. Windows Server 2016"
+			echo "43. Windows 7                 44. Windows Server 2025"
+			echo "45. Windows Server 2022       46. Windows Server 2019"
 			echo "47. Windows 11 ARM"
 			echo "------------------------"
 			echo "0. 이전 메뉴로 돌아갑니다"
@@ -4788,7 +4788,6 @@ dd_xitong() {
 				exit
 				;;
 
-
 			  41)
 				send_stats "Windows 11을 다시 설치하십시오"
 				dd_xitong_2
@@ -4796,6 +4795,7 @@ dd_xitong() {
 				reboot
 				exit
 				;;
+
 			  42)
 				dd_xitong_2
 				send_stats "Windows 10을 다시 설치하십시오"
@@ -4803,6 +4803,7 @@ dd_xitong() {
 				reboot
 				exit
 				;;
+
 			  43)
 				send_stats "Windows 7을 다시 설치하십시오"
 				dd_xitong_4
@@ -4812,23 +4813,25 @@ dd_xitong() {
 				;;
 
 			  44)
+				send_stats "Windows Server 25를 다시 설치하십시오"
+				dd_xitong_2
+				bash InstallNET.sh -windows 2025 -lang "cn"
+				reboot
+				exit
+				;;
+
+			  45)
 				send_stats "Windows Server 22를 다시 설치하십시오"
 				dd_xitong_2
 				bash InstallNET.sh -windows 2022 -lang "cn"
 				reboot
 				exit
 				;;
-			  45)
+
+			  46)
 				send_stats "Windows Server 19를 다시 설치하십시오"
 				dd_xitong_2
 				bash InstallNET.sh -windows 2019 -lang "cn"
-				reboot
-				exit
-				;;
-			  46)
-				send_stats "Windows Server 16을 다시 설치하십시오"
-				dd_xitong_2
-				bash InstallNET.sh -windows 2016 -lang "cn"
 				reboot
 				exit
 				;;
@@ -6882,7 +6885,7 @@ docker_ssh_migration() {
 
 		echo -e "${YELLOW}Docker 컨테이너 백업 ...${NC}"
 		docker ps --format '{{.Names}}'
-		read -p "백업 할 컨테이너 이름을 입력하십시오 (여러 공간으로 분리하면 입력 백업이 모두 실행 중입니다)." containers
+		read -e -p  "백업 할 컨테이너 이름을 입력하십시오 (여러 공간으로 분리하면 입력 백업이 모두 실행 중입니다)." containers
 
 		install tar jq gzip
 		install_docker
@@ -6917,7 +6920,7 @@ docker_ssh_migration() {
 				local project_name=$(docker inspect "$c" | jq -r '.[0].Config.Labels["com.docker.compose.project"] // empty')
 
 				if [ -z "$project_dir" ]; then
-					read -p "Compose 디렉토리가 감지되지 않으므로 수동으로 경로를 입력하십시오." project_dir
+					read -e -p  "Compose 디렉토리가 감지되지 않으므로 수동으로 경로를 입력하십시오." project_dir
 				fi
 
 				# Compose 프로젝트가 포장 된 경우 건너 뛰십시오
@@ -6990,7 +6993,7 @@ docker_ssh_migration() {
 	restore_docker() {
 
 		send_stats "도커 복원"
-		read -p "복원하려면 백업 디렉토리를 입력하십시오." BACKUP_DIR
+		read -e -p  "복원하려면 백업 디렉토리를 입력하십시오." BACKUP_DIR
 		[[ ! -d "$BACKUP_DIR" ]] && { echo -e "${RED}백업 디렉토리가 존재하지 않습니다${NC}"; return; }
 
 		echo -e "${BLUE}복원 작업 시작 ...${NC}"
@@ -7005,7 +7008,7 @@ docker_ssh_migration() {
 				project_name=$(basename "$f" | sed 's/backup_type_//')
 				path_file="$BACKUP_DIR/compose_path_${project_name}.txt"
 				[[ -f "$path_file" ]] && original_path=$(cat "$path_file") || original_path=""
-				[[ -z "$original_path" ]] && read -p "원래 경로는 찾을 수 없었습니다. 복원 디렉토리 경로를 입력하십시오." original_path
+				[[ -z "$original_path" ]] && read -e -p  "원래 경로는 찾을 수 없었습니다. 복원 디렉토리 경로를 입력하십시오." original_path
 
 				# Compose 프로젝트 용 컨테이너가 이미 실행 중인지 확인하십시오.
 				running_count=$(docker ps --filter "label=com.docker.compose.project=$project_name" --format '{{.Names}}' | wc -l)
@@ -7014,8 +7017,8 @@ docker_ssh_migration() {
 					continue
 				fi
 
-				read -p "Compose 프로젝트 복원 확인 [$project_name] 경로로 [$original_path] ? (y/n): " confirm
-				[[ "$confirm" != "y" ]] && read -p "새로운 복원 경로를 입력하십시오 :" original_path
+				read -e -p  "Compose 프로젝트 복원 확인 [$project_name] 경로로 [$original_path] ? (y/n): " confirm
+				[[ "$confirm" != "y" ]] && read -e -p  "새로운 복원 경로를 입력하십시오 :" original_path
 
 				mkdir -p "$original_path"
 				tar -xzf "$BACKUP_DIR/compose_project_${project_name}.tar.gz" -C "$original_path"
@@ -7109,11 +7112,11 @@ docker_ssh_migration() {
 	migrate_docker() {
 		send_stats "도커 마이그레이션"
 		install jq
-		read -p "마이그레이션하려면 백업 디렉토리를 입력하십시오." BACKUP_DIR
+		read -e -p  "마이그레이션하려면 백업 디렉토리를 입력하십시오." BACKUP_DIR
 		[[ ! -d "$BACKUP_DIR" ]] && { echo -e "${RED}백업 디렉토리가 존재하지 않습니다${NC}"; return; }
 
-		read -p "대상 서버 IP :" TARGET_IP
-		read -p "대상 서버 SSH 사용자 이름 :" TARGET_USER
+		read -e -p  "대상 서버 IP :" TARGET_IP
+		read -e -p  "대상 서버 SSH 사용자 이름 :" TARGET_USER
 
 		LATEST_TAR="$BACKUP_DIR"  # 这里直接传整个目录
 
@@ -7130,7 +7133,7 @@ docker_ssh_migration() {
 	# ----------------------------
 	delete_backup() {
 		send_stats "Docker 백업 파일 삭제"
-		read -p "삭제하려면 백업 디렉토리를 입력하십시오." BACKUP_DIR
+		read -e -p  "삭제하려면 백업 디렉토리를 입력하십시오." BACKUP_DIR
 		[[ ! -d "$BACKUP_DIR" ]] && { echo -e "${RED}백업 디렉토리가 존재하지 않습니다${NC}"; return; }
 		rm -rf "$BACKUP_DIR"
 		echo -e "${GREEN}삭제 된 백업 :${BACKUP_DIR}${NC}"
@@ -7156,7 +7159,7 @@ docker_ssh_migration() {
 			echo "------------------------"
 			echo -e "0. 이전 메뉴로 돌아갑니다"
 			echo "------------------------"
-			read -p "선택하십시오 :" choice
+			read -e -p  "선택하십시오 :" choice
 			case $choice in
 				1) backup_docker ;;
 				2) migrate_docker ;;
@@ -9079,7 +9082,7 @@ while true; do
 			echo -e "Nezha 모니터링$check_docker $update_status"
 			echo "오픈 소스, 가볍고 사용하기 쉬운 서버 모니터링 및 작동 및 유지 보수 도구"
 			echo "공식 웹 사이트 구성 문서 : https://nezha.wiki/guide/dashboard.html"
-			if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1; then
+			if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name"; then
 				local docker_port=$(docker port $docker_name | awk -F'[:]' '/->/ {print $NF}' | uniq)
 				check_docker_app_ip
 			fi
@@ -9171,7 +9174,7 @@ while true; do
 			fi
 			echo ""
 
-			if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1; then
+			if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name"; then
 				yuming=$(cat /home/docker/mail.txt)
 				echo "액세스 주소 :"
 				echo "https://$yuming"
@@ -9218,7 +9221,7 @@ while true; do
 						-d analogic/poste.io
 
 
-					mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+					add_app_id
 
 					clear
 					echo "Poste.io가 설치되었습니다"
@@ -9243,7 +9246,7 @@ while true; do
 						-d analogic/poste.i
 
 
-					mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+					add_app_id
 
 					clear
 					echo "Poste.io가 설치되었습니다"
@@ -9567,7 +9570,7 @@ while true; do
 			echo -e "썬더 풀 서비스$check_docker"
 			echo "Lei Chi는 변경 기술이 개발 한 WAF 사이트 방화벽 프로그램 패널로, 자동 방어를 위해 대행사 사이트를 역전시킬 수 있습니다."
 			echo "비디오 소개 : https://www.bilibili.com/video/bv1mz421t74c?t=0.1"
-			if docker ps -a --format '{{.Names}}' | grep -q "$docker_name" >/dev/null 2>&1; then
+			if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "$docker_name"; then
 				check_docker_app_ip
 			fi
 			echo ""
@@ -9585,7 +9588,7 @@ while true; do
 					check_disk_space 5
 					bash -c "$(curl -fsSLk https://waf-ce.chaitin.cn/release/latest/setup.sh)"
 
-					mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+					add_app_id
 					clear
 					echo "Thunder Pool WAF 패널이 설치되었습니다"
 					check_docker_app_ip
@@ -9598,7 +9601,7 @@ while true; do
 					docker rmi $(docker images | grep "safeline" | grep "none" | awk '{print $3}')
 					echo ""
 
-					mkdir -p /home/docker && touch /home/docker/appno.txt && (add_app_id)
+					add_app_id
 					clear
 					echo "Thunder Pool WAF 패널이 업데이트되었습니다"
 					check_docker_app_ip
@@ -11789,9 +11792,9 @@ while true; do
 
 		docker_rum() {
 
-		read -p "네트워크를 구성하려면 클라이언트 수를 입력하십시오 (기본값 5)." COUNT
+		read -e -p  "네트워크를 구성하려면 클라이언트 수를 입력하십시오 (기본값 5)." COUNT
 		COUNT=${COUNT:-5}
-		read -p "Wireguard 세그먼트를 입력하십시오 (기본값 10.13.13.0) :" NETWORK
+		read -e -p  "Wireguard 세그먼트를 입력하십시오 (기본값 10.13.13.0) :" NETWORK
 		NETWORK=${NETWORK:-10.13.13.0}
 
 		PEERS=$(seq -f "wg%02g" 1 "$COUNT" | paste -sd,)
