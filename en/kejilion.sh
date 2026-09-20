@@ -3576,7 +3576,7 @@ stream_panel() {
 		fi
 		echo ""
 		echo "------------------------"
-		echo "1. Install 2. Update 3. Uninstall"
+		echo "1. 安装               2. 更新               3. 卸载"
 		echo "------------------------"
 		echo "4. 添加转发服务       5. 修改转发服务       6. 删除转发服务"
 		echo "------------------------"
@@ -3593,7 +3593,7 @@ stream_panel() {
 				update_docker_compose_with_db_creds
 				nginx_upgrade
 				add_app_id
-				send_stats "Update Stream four-layer proxy"
+				send_stats "更新Stream四层代理"
 				;;
 			3)
 				read -e -p "确定要删除 nginx 容器吗？这可能会影响网站功能！(y/N): " confirm
@@ -3622,8 +3622,8 @@ stream_panel() {
 				send_stats "修改四层代理"
 				;;
 			6)
-				send_stats "Delete forwarding configuration"
-				read -e -p "Please enter the service name you want to delete:" stream_name
+				send_stats "删除转发配置"
+				read -e -p "请输入你要删除的服务名: " stream_name
 				rm /home/web/stream.d/$stream_name.conf > /dev/null 2>&1
 				docker restart nginx
 				send_stats "删除四层代理"
@@ -3645,7 +3645,7 @@ ldnmp_Proxy_backend_stream() {
 	send_stats "安装$webname"
 	echo "开始部署 $webname"
 
-	# Get agent name
+	# 获取代理名称
 	read -rp "请输入代理转发名称 (如 mysql_proxy): " proxy_name
 	if [ -z "$proxy_name" ]; then
 		echo "名称不能为空"; return 1
@@ -3729,12 +3729,12 @@ ldnmp_web_status() {
 		local db_output="${gl_lv}${db_count}${gl_bai}"
 
 		clear
-		send_stats "LDNMP site management"
+		send_stats "LDNMP站点管理"
 		echo "LDNMP环境"
 		echo "------------------------"
 		ldnmp_v
 
-		echo -e "Site:${output}                      证书到期时间"
+		echo -e "站点: ${output}                      证书到期时间"
 		echo -e "------------------------"
 		for cert_file in /home/web/certs/*_cert.pem; do
 		  local domain=$(basename "$cert_file" | sed 's/_cert.pem//')
@@ -3775,13 +3775,13 @@ ldnmp_web_status() {
 		echo ""
 		echo "站点目录"
 		echo "------------------------"
-		echo -e "data${gl_hui}/home/web/html${gl_bai}     证书 ${gl_hui}/home/web/certs${gl_bai}Configuration${gl_hui}/home/web/conf.d${gl_bai}"
+		echo -e "数据 ${gl_hui}/home/web/html${gl_bai}     证书 ${gl_hui}/home/web/certs${gl_bai}     配置 ${gl_hui}/home/web/conf.d${gl_bai}"
 		echo "------------------------"
 		echo ""
 		echo "操作"
 		echo "------------------------"
 		echo "1.  申请/更新域名证书               2.  克隆站点域名"
-		echo "3. Clear site cache 4. Create associated site"
+		echo "3.  清理站点缓存                    4.  创建关联站点"
 		echo "5.  查看访问日志                    6.  查看错误日志"
 		echo "7.  编辑全局配置                    8.  编辑站点配置"
 		echo "9.  管理站点数据库                  10. 查看站点分析报告"
@@ -3844,7 +3844,7 @@ ldnmp_web_status() {
 				;;
 			4)
 				send_stats "创建关联站点"
-				echo -e "Associate a new domain name with the existing site for access"
+				echo -e "为现有的站点再关联一个新域名用于访问"
 				read -e -p "请输入现有的域名: " oddyuming
 				read -e -p "请输入新域名: " yuming
 				install_certbot
@@ -3971,7 +3971,7 @@ done
 check_frp_app() {
 
 if [ -d "/home/frp/" ]; then
-	check_frp="${gl_lv}Installed${gl_bai}"
+	check_frp="${gl_lv}已安装${gl_bai}"
 else
 	check_frp="${gl_hui}未安装${gl_bai}"
 fi
@@ -4025,7 +4025,7 @@ EOF
 	ip_address
 	echo "------------------------"
 	echo "客户端部署时需要用的参数"
-	echo "Service IP:$ipv4_address"
+	echo "服务IP: $ipv4_address"
 	echo "token: $token"
 	echo
 	echo "FRP面板信息"
@@ -6968,7 +6968,7 @@ linux_tools() {
 	  echo -e "${gl_kjlan}31.  ${gl_bai}全部安装                          ${gl_kjlan}32.  ${gl_bai}全部安装（不含屏保和游戏）${gl_huang}★${gl_bai}"
 	  echo -e "${gl_kjlan}33.  ${gl_bai}全部卸载"
 	  echo -e "${gl_kjlan}------------------------"
-	  echo -e "${gl_kjlan}41.  ${gl_bai}Install specified tools${gl_kjlan}42.  ${gl_bai}卸载指定工具"
+	  echo -e "${gl_kjlan}41.  ${gl_bai}安装指定工具                      ${gl_kjlan}42.  ${gl_bai}卸载指定工具"
 	  echo -e "${gl_kjlan}------------------------"
 	  echo -e "${gl_kjlan}0.   ${gl_bai}返回主菜单"
 	  echo -e "${gl_kjlan}------------------------${gl_bai}"
@@ -7095,7 +7095,7 @@ linux_tools() {
 			  clear
 			  vim -h
 			  cd ~
-			  send_stats "Install vim"
+			  send_stats "安装vim"
 			  ;;
 			16)
 			  clear
@@ -13910,7 +13910,7 @@ EOF
 				echo "15. 荷兰尤特赖赫特时间       16. 西班牙马德里时间"
 				echo "------------------------"
 				echo "美洲"
-				echo "21. US Western Time 22. US Eastern Time"
+				echo "21. 美国西部时间             22. 美国东部时间"
 				echo "23. 加拿大时间               24. 墨西哥时间"
 				echo "25. 巴西时间                 26. 阿根廷时间"
 				echo "------------------------"
